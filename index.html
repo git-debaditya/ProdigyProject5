@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weatherly</title>
+
+  <link rel="stylesheet" href="weatherly.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Weatherly</h1>
+    <button id="toggle-mode" class="sun">
+      <i class="fas fa-sun"></i>
+      <i class="fas fa-moon"></i>
+    </button>
+    <form id="location-form">
+      <div class="input-container">
+        <input type="text" id="location-input" placeholder="Enter Location">
+        <button class= "clear-input" id="clear-input"><i class="fas fa-times"></i></button>
+      </div>
+      <button type="submit" class="get-weather-btn"><i class="fas fa-search"></i></button>
+    </form>
+    <div id="weather"></div>
+    <div class="forecast" id="forecast"></div>
+</div>
+
+<script src="weatherlyVisual-Crossing.js"></script>
+  
+</body>
+</html>
+
