@@ -128,8 +128,8 @@ function displayForecast(data)
         forecastInfo.innerHTML += `
           <div class = 'forecast-item'>
             <p>${formattedDate}, ${dayOfWeek}</p>
-            <p>H: ${day.tempmin}°C</p>
-            <p>Lo: ${day.tempmax}°C</p>
+            <p>Min: ${day.tempmin}°C</p>
+            <p>Max: ${day.tempmax}°C</p>
             <p>${day.conditions}</p>
             <i class="weather-icon fas fa-${getWeatherIcon(iconCode)}"></i>
           </div>
