@@ -8,7 +8,14 @@
 
   <link rel="stylesheet" href="weatherly.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
 
+    <!-- 
+    integrity and crossorigin attributes for security and CORS handling.
+    Subresource Integrity (SRI) ensures the browser verifies the file's hash before executing it.
+    -->
 </head>
 <body>
 
@@ -27,9 +34,11 @@
     </form>
     <div id="weather"></div>
     <div class="forecast" id="forecast"></div>
+    <div id="map"></div>
 </div>
 
 <script src="weatherlyVisual-Crossing.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   
 </body>
 </html>

@@ -17,6 +17,18 @@ const hourlyForecastInfo = document.getElementById('hourly-forecast');
 //dark-mode button
 const toggleModeBtn = document.getElementById('toggle-mode');
 
+//Global Map variable
+let map = L.map('map').setView([22.5726, 88.3639], 8); // Default to Kolkata
+
+// Map tiles (OpenStreetMap)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Marker (initial, replaced on searches)
+let marker = null;
+
 // Set initial state to light mode
 let isDarkMode = false;
 toggleModeBtn.querySelector('.fa-moon').style.display = 'none'; // Hide moon icon initially
@@ -74,7 +86,9 @@ function displayWeather(data)
   const sunRise = currentWeather.sunrise;
   const sunSet = currentWeather.sunset;
   const precipitation = currentWeather.precip;
-
+  
+  updateMap(data.latitude, data.longitude, currentTemperature, weatherDescription);
+  
   weatherInfo.innerHTML = `
     <div class="weatherInfo">
 
@@ -135,6 +149,19 @@ function displayForecast(data)
           </div>
         `;
       });
+}
+
+//Function to center, zoom, and pin temp info in map
+function updateMap(lat, lon, temp, condition) {
+  map.setView([lat, lon], 10); // Zoom level 10
+
+  // Remove existing marker if any
+  if (marker) {
+    map.removeLayer(marker);
+  }
+  marker = L.marker([lat, lon]).addTo(map)
+
+  marker.bindPopup(`<b>${temp}°C</b><br>${condition}`).openPopup();
 }
 
 // Event listener for form submission
