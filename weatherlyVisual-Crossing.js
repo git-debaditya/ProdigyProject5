@@ -1,17 +1,5 @@
 const form = document.getElementById('location-form');
 
-//Global Map variable
-let map = L.map('map').setView([22.5726, 88.3639], 8); // Default to Kolkata
-
-// Map tiles (OpenStreetMap)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Marker (initial, replaced on searches)
-let marker = null;
-
 //location
 const locationInput = document.getElementById('location-input');
 // clear Input button ('X')
@@ -28,6 +16,18 @@ const hourlyForecastInfo = document.getElementById('hourly-forecast');
 
 //dark-mode button
 const toggleModeBtn = document.getElementById('toggle-mode');
+
+//Global Map variable
+let map = L.map('map').setView([22.5726, 88.3639], 8); // Default to Kolkata
+
+// Map tiles (OpenStreetMap)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Marker (initial, replaced on searches)
+let marker = null;
 
 // Set initial state to light mode
 let isDarkMode = false;
@@ -78,7 +78,6 @@ function displayWeather(data)
   const currentWeather = data.currentConditions;
   const currentTemperature = currentWeather.temp;
   const weatherDescription = currentWeather.conditions;
-  updateMap(data.latitude, data.longitude, currentTemperature, weatherDescription);
   const humidity = currentWeather.humidity;
   const windSpeed = currentWeather.windspeed;
   const iconCode = currentWeather.icon;
@@ -88,6 +87,7 @@ function displayWeather(data)
   const sunSet = currentWeather.sunset;
   const precipitation = currentWeather.precip;
   
+  updateMap(data.latitude, data.longitude, currentTemperature, weatherDescription);
   
   weatherInfo.innerHTML = `
     <div class="weatherInfo">
