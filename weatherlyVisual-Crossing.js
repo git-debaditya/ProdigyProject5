@@ -1,3 +1,5 @@
+/* DOM elements declarations */
+
 const form = document.getElementById('location-form');
 
 //location
@@ -17,17 +19,9 @@ const hourlyForecastInfo = document.getElementById('hourly-forecast');
 //dark-mode button
 const toggleModeBtn = document.getElementById('toggle-mode');
 
-//Global Map variable
-let map = L.map('map').setView([22.5726, 88.3639], 8); // Default to Kolkata
+/*-----------------------------------------------------------------------*/
 
-// Map tiles (OpenStreetMap)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Marker (initial, replaced on searches)
-let marker = null;
+/* Dark mode toggle functionality */
 
 // Set initial state to light mode
 let isDarkMode = false;
@@ -47,8 +41,43 @@ toggleModeBtn.classList.add('sun');
 toggleModeBtn.querySelector('.fa-sun').style.display = 'inline-block';
 toggleModeBtn.querySelector('.fa-moon').style.display = 'none';
 
+/*-----------------------------------------------------------------------*/
 
-// Function to fetch weather data
+/* Map initialization */
+
+//Global Map variable
+let map = L.map('map').setView([22.5726, 88.3639], 8); // Default to Kolkata
+
+// Map tiles (OpenStreetMap)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Marker (initial, replaced on searches)
+let marker = null;
+
+/*-----------------------------------------------------------------------*/
+
+/* Update Map */
+
+//Function to center, zoom, and pin temp info in map
+function updateMap(lat, lon, temp, condition) {
+  map.setView([lat, lon], 10); // Zoom level 10
+
+  // Remove existing marker if any
+  if (marker) {
+    map.removeLayer(marker);
+  }
+  marker = L.marker([lat, lon]).addTo(map)
+
+  marker.bindPopup(`<b>${temp}°C</b><br>${condition}`).openPopup();
+}
+
+/*-----------------------------------------------------------------------*/
+
+/* Function to fetch weather data */
+
 async function fetchWeather(location) {
   const apiKey = 'MY52KW88F8TCFLJ8TPXXBVFPR';  //visual-crossing API
   const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=metric&key=${apiKey}&include=current`;
@@ -66,7 +95,80 @@ async function fetchWeather(location) {
   }
 }
 
-// Function to display current weather information
+/*-----------------------------------------------------------------------*/
+
+/* Reverse GeoCoding :{lat, lon} -> City Name */
+
+async function reverseGeocode(lat, lon) {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=12`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const addr = data.address;
+
+    //Extract readable location names
+    return (
+          addr.city ||
+          addr.town ||
+          addr.village ||
+          addr.municipality ||
+          addr.state_district ||
+          addr.county ||
+          addr.state ||
+          addr.region ||
+          addr.country ||
+          data.display_name
+        );
+
+   } catch (err) {
+    console.error("Reverse geocoding failed:", err);
+    return `${lat},${lon}`; // Fallback to coordinates
+   }
+}
+
+/*-----------------------------------------------------------------------*/
+
+/* Fetch user's current location */
+
+function getUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition (
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        // Get readable city name
+        const locationName = await reverseGeocode(lat, lon);
+
+        // Now fetch weather using city name instead of coords
+        const weatherData = await fetchWeather(locationName);
+        
+        displayWeather(weatherData);
+        displayForecast(weatherData);
+      },
+
+      async () => {
+        console.warn(`Location access denied or unavailable. Using default city.`);
+        const fallback = await fetchWeather("Kolkata");
+        displayWeather(fallback);
+        displayForecast(fallback);
+      }
+    );
+  } else {
+    console.warn(`Geolocation not supported. Using default city.`);
+    fetchWeather("Kolkata")
+      .then(data => {
+        displayWeather(data);
+        displayForecast(data);
+      });
+  }
+}
+
+/*-----------------------------------------------------------------------*/
+
+/* Function to display current weather information */
+
 function displayWeather(data)
 {
   if (!data)
@@ -86,8 +188,6 @@ function displayWeather(data)
   const sunRise = currentWeather.sunrise;
   const sunSet = currentWeather.sunset;
   const precipitation = currentWeather.precip;
-  
-  updateMap(data.latitude, data.longitude, currentTemperature, weatherDescription);
   
   weatherInfo.innerHTML = `
     <div class="weatherInfo">
@@ -117,9 +217,15 @@ function displayWeather(data)
   <i class="weather-icon fas fa-${getWeatherIcon(iconCode)}" style = "display:block;"></i>
   <p>${weatherDescription}</p>
   `;
+
+  // Update the map with current location and weather info
+  updateMap(data.latitude, data.longitude, currentTemperature, weatherDescription);
 }
 
-// Function to display weekly forecast
+/*-----------------------------------------------------------------------*/
+
+/* Function to display weekly forecast */
+
 function displayForecast(data)
 {
   if (!data)
@@ -150,19 +256,9 @@ function displayForecast(data)
         `;
       });
 }
+/*-----------------------------------------------------------------------*/
 
-//Function to center, zoom, and pin temp info in map
-function updateMap(lat, lon, temp, condition) {
-  map.setView([lat, lon], 10); // Zoom level 10
-
-  // Remove existing marker if any
-  if (marker) {
-    map.removeLayer(marker);
-  }
-  marker = L.marker([lat, lon]).addTo(map)
-
-  marker.bindPopup(`<b>${temp}°C</b><br>${condition}`).openPopup();
-}
+/* Form submission */
 
 // Event listener for form submission
 form.addEventListener('submit', async (e) => {
@@ -173,15 +269,7 @@ form.addEventListener('submit', async (e) => {
   displayWeather(weatherData);
   displayForecast(weatherData);
 });
-
-// Initial weather fetch for default location (e.g., Kolkata)
-fetchWeather('Kolkata')
-  .then(data => 
-    {
-      displayWeather(data);  //display current weather
-      displayForecast(data);  //display 7-day forecast
-    })
-  .catch(error => console.error('Failed to fetch initial weather data:', error));
+/*-----------------------------------------------------------------------*/
 
 // Function to map icon codes to weather icons
 function getWeatherIcon(iconCode) {
@@ -252,3 +340,10 @@ locationInput.addEventListener('keydown', async(event)=>
     displayForecast(weatherData);
   }
 });
+
+/*-----------------------------------------------------------------------*/
+
+// On page load, get user's location and display weather
+document.addEventListener('DOMContentLoaded', () => {
+  getUserLocation();
+})
