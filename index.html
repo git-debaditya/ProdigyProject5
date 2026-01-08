@@ -15,23 +15,29 @@
 </head>
 <body>
 
-  <div class="container">
-    <h1>Weatherly</h1>
-    <button id="toggle-mode" class="sun">
-      <i class="fas fa-sun"></i>
-      <i class="fas fa-moon"></i>
-    </button>
-    <form id="location-form">
-      <div class="input-container">
-        <input type="text" id="location-input" placeholder="Enter Location">
-        <button class= "clear-input" id="clear-input"><i class="fas fa-times"></i></button>
-      </div>
-      <button type="submit" class="get-weather-btn"><i class="fas fa-search"></i></button>
-    </form>
+  <div class="wrapper">
     <div id="map"></div>
-    <div id="weather"></div>
-    <div class="forecast" id="forecast"></div>
-</div>
+    <div class="UI">
+      <h1>Weatherly</h1>
+      <button id="toggle-mode" class="sun">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+      </button>
+      <form id="location-form">
+        <div class="input-container">
+          <input type="text" id="location-input" placeholder="Enter Location">
+          <button class= "clear-input" id="clear-input"><i class="fas fa-times"></i></button>
+        </div>
+        <button type="submit" class="get-weather-btn" id="search"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div id="weather"></div>
+      <div class="forecast" id="forecast"></div>
+    </div>
+      
+  </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="weatherlyVisual-Crossing.js"></script>

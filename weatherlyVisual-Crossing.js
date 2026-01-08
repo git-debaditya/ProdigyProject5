@@ -142,7 +142,10 @@ function getUserLocation() {
         const locationName = await reverseGeocode(lat, lon);
 
         // Now fetch weather using city name instead of coords
-        const weatherData = await fetchWeather(locationName);
+        const weatherData = await fetchWeather(`${lat}, ${lon}`);
+        
+        // Optional: override city name if needed
+        weatherData.cityNameOverride = locationName; 
         
         displayWeather(weatherData);
         displayForecast(weatherData);
@@ -183,7 +186,7 @@ function displayWeather(data)
   const humidity = currentWeather.humidity;
   const windSpeed = currentWeather.windspeed;
   const iconCode = currentWeather.icon;
-  const cityName = data.resolvedAddress;
+  const cityName = data.cityNameOverride || data.resolvedAddress;
   const feelsLike = currentWeather.feelslike;
   const sunRise = currentWeather.sunrise;
   const sunSet = currentWeather.sunset;
